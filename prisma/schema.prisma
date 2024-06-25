@@ -1,0 +1,157 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id             String         @id @default(uuid())
+  firstName      String
+  lastName       String?
+  email          String         @unique
+  hash           String
+  Balance        Balance?
+  Cart           Cart?
+  BooksAsOwner   Book[]         @relation(name: "book_owner")
+  Orders         Order[]
+  deleted        Boolean        @default(false)
+  isAdmin        Boolean        @default(false)
+  isSeller       Boolean        @default(false)
+  likeCategories BookCategory[]
+  RefreshToken   RefreshToken[]
+
+  @@map("user")
+}
+
+model Image {
+  id     String  @id @default(uuid())
+  name   String
+  local  Boolean @default(true)
+  url    String?
+  Book   Book?
+  bookId String?
+
+  @@map("image")
+}
+
+model Cart {
+  id     String @id @default(uuid())
+  User   User   @relation(fields: [userId], references: [id])
+  userId String @unique
+  Books  Book[]
+
+  @@map("cart")
+}
+
+model Balance {
+  id         String    @id @default(uuid())
+  User       User      @relation(fields: [userId], references: [id])
+  valueInBRL Float
+  userId     String    @unique
+  Payments   Payment[]
+
+  @@map("balance")
+}
+
+model Payment {
+  id         String        @id @default(uuid())
+  Order      Order         @relation(fields: [orderId], references: [id])
+  Balance    Balance       @relation(fields: [balanceId], references: [id])
+  valueInBRL Float
+  method     PaymentMethod
+  status     PaymentStatus @default(PENDING)
+  paidAt     DateTime?
+  orderId    String        @unique
+  balanceId  String
+
+  @@map("payment")
+}
+
+model Order {
+  id        String      @id @default(uuid())
+  status    OrderStatus @default(PENDING)
+  Books     Book[]
+  User      User        @relation(fields: [userId], references: [id])
+  userId    String
+  address   String
+  Payment   Payment?
+  createdAt DateTime    @default(now())
+
+  @@map("order")
+}
+
+model RefreshToken {
+  id                String  @id @default(uuid())
+  expiresIn         Int
+  User              User    @relation(fields: [userId], references: [id])
+  userId            String  @unique
+  oldRefreshTokenId String?
+  keepSession       Boolean @default(false)
+
+  @@map("refresh_token")
+}
+
+model Book {
+  id              String       @id @default(uuid())
+  Image           Image        @relation(fields: [imageId], references: [id])
+  category        BookCategory
+  title           String
+  priceInBRL      Float
+  offerInBRL      Float?
+  releaseYear     Int
+  pencillerName   String
+  writerName      String
+  coverArtistName String
+  description     String
+  Owner           User         @relation(fields: [ownerId], references: [id], name: "book_owner")
+  Orders          Order[]
+  stock           Int          @default(1)
+  ownerId         String
+  Carts           Cart[]
+  imageId         String       @unique
+  deleted         Boolean      @default(false)
+
+  @@index([title])
+  @@map("book")
+}
+
+enum OrderStatus {
+  PENDING
+  DISPATCHED
+  DELIVERED
+
+  @@map("order_status")
+}
+
+enum PaymentMethod {
+  DEBITCARD
+  CREDITCARD
+  PIX
+
+  @@map("payment_method")
+}
+
+enum PaymentStatus {
+  PENDING
+  REALIZED
+
+  @@map("payment_status")
+}
+
+enum BookCategory {
+  ACTION
+  HORROR
+  DRAMA
+  FANTASY
+  COMEDY
+  SUSPENSE
+  ROMANTIC
+  ADVENTURE
+  FICTION
+  SUPERHERO
+
+  @@map("book_category")
+}

@@ -1,0 +1,5 @@
+-- AlterTable
+ALTER TABLE "book" ADD COLUMN     "deleted" BOOLEAN NOT NULL DEFAULT false;
+
+-- AlterTable
+ALTER TABLE "order" ADD COLUMN     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP;
