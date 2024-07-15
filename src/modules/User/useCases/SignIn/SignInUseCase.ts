@@ -10,10 +10,10 @@ export class SignInUseCase {
 
   async execute({ email, password, keepSession }: SignInDTO) {
     const isUserExists = await this.userRepository.findByEmail(email);
-    if (!isUserExists) throw new AppError("Usuário inválido.");
+    if (!isUserExists) throw new AppError("Credenciais inválidas.");
 
     const isCorrectPassword = compare(password, isUserExists.hash);
-    if (!isCorrectPassword) throw new AppError("Usuário inválido.");
+    if (!isCorrectPassword) throw new AppError("Credenciais inválidas.");
 
     const createRefreshTokenUseCase = makeCreateRefreshTokenUseCase();
     const { accessToken, refreshToken } =

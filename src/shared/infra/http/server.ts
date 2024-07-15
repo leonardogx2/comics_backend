@@ -1,12 +1,10 @@
 import express, { NextFunction, Request, Response } from "express";
 import "express-async-errors";
-import dotenv from "dotenv";
 import { allRoutes } from "./routes";
 import { printMiddleware } from "./middlewares/printMiddleware";
 import cors from "cors";
 import { errorHandlerMiddleware } from "./middlewares/errorHandlerMiddleware";
 
-dotenv.config();
 const app = express();
 app.use(express.json());
 app.use(cors());

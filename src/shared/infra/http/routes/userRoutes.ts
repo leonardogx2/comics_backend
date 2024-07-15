@@ -5,12 +5,14 @@ import { verifyAvailableEmailController } from "@/modules/User/useCases/VerifyAv
 import { Router } from "express";
 import { ensureAuthMiddleware } from "../middlewares/ensureAuthMiddleware";
 import { getDashboardController } from "@/modules/Dashboard/useCases/GetDashboard";
+import { turnSellerController } from "@/modules/User/useCases/TurnSeller";
 
 const userRoutes = Router();
 
 userRoutes.post("/register", registerUserControler.handle);
 userRoutes.get("/available/email", verifyAvailableEmailController.handle);
 userRoutes.use(ensureAuthMiddleware);
+userRoutes.post("/turnSeller", turnSellerController.handle);
 userRoutes.post("/cart/:id", addBookInCartController.handle);
 userRoutes.delete("/cart/:id", delBookInCartController.handle);
 userRoutes.get("/dashboard", getDashboardController.handle);

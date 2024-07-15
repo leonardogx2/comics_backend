@@ -18,4 +18,5 @@ export interface GetAllBooksDTO {
   inStock?: boolean;
   inOffer?: boolean;
   deleted?: boolean;
+  userPreference?: boolean;
 }

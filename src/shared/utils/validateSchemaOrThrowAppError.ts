@@ -1,8 +1,8 @@
-import { z, ZodError } from "zod";
+import { AnyZodObject, z, ZodError } from "zod";
 import { AppError } from "../errors/AppError";
 
 export function validateSchemaOrThrowAppError(
-  validator: z.ZodEffects<z.AnyZodObject>,
+  validator: AnyZodObject | z.ZodEffects<z.AnyZodObject>,
   data: unknown
 ) {
   try {

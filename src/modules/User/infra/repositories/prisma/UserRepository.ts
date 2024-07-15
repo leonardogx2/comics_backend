@@ -2,6 +2,7 @@ import { CreateUserDTO } from "@/modules/User/dtos/CreateUserDTO";
 import { User } from "@/modules/User/entity/User";
 import { IUserRepository } from "../../types/IUserRepository";
 import prisma from "../../../../../../prisma";
+import { UpdateUserDTO } from "@/modules/User/dtos/UpdateUserDTO";
 
 export class PrismaUserRepository implements IUserRepository {
   async create(data: CreateUserDTO): Promise<User> {
@@ -18,6 +19,17 @@ export class PrismaUserRepository implements IUserRepository {
     });
 
     return user;
+  }
+
+  async update(data: UpdateUserDTO): Promise<User> {
+    const updatedUser = await prisma.user.update({
+      where: { id: data.id },
+      data: {
+        isSeller: data.isSeller,
+      },
+    });
+
+    return updatedUser;
   }
   async findById(id: string): Promise<User | undefined> {
     const user = await prisma.user.findUnique({

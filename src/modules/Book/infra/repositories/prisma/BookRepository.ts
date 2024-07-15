@@ -141,19 +141,35 @@ export class PrismaBookRepository implements IBookRepository {
       }
     }
 
+    const orderByFunc = () => {
+      switch (orderBy) {
+        case "mostSelled":
+          return { Orders: { _count: "desc" } };
+        case "za":
+          return { title: "desc" };
+        case "bigPrice":
+          return {
+            _sort: [
+              { offerPriceInBRL: "desc", nulls: "last" },
+              { priceInBRL: "desc" },
+            ],
+          };
+        case "lowPrice":
+          return {
+            _sort: [
+              { offerPriceInBRL: "asc", nulls: "last" },
+              { priceInBRL: "asc" },
+            ],
+          };
+        default:
+          return { title: "asc" };
+      }
+    };
+
     const books = (await prisma.book.findMany({
       where,
       include,
-      orderBy:
-        orderBy === "mostSelled"
-          ? { Orders: { _count: "desc" } }
-          : orderBy === "za"
-          ? { title: "desc" }
-          : orderBy === "bigPrice"
-          ? { priceInBRL: "desc" }
-          : orderBy === "lowPrice"
-          ? { priceInBRL: "asc" }
-          : { title: "asc" },
+      orderBy: orderByFunc() as Prisma.BookOrderByWithRelationInput,
       ...pagination,
     })) as Book[];
     const total = await prisma.book.count({ where });
